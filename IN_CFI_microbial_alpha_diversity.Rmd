@@ -1,0 +1,245 @@
+---
+title: "microbial_alpha_diversity"
+author: "Ashley"
+date: "3/2/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(ggeffects)
+library(cowplot)
+library(ggpubr)
+
+
+```
+
+
+```{r AM_5-10cm_ad, warning=F, echo=F}
+AM_shannon <- diversity(amfungi_data, index="shannon") 
+AM_shannon=as.data.frame(AM_shannon) %>% 
+  rownames_to_column("plotID") 
+
+AM_simpson <- diversity(amfungi_data, index="simpson")
+AM_simpson=as.data.frame(AM_simpson) %>% 
+  rownames_to_column("plotID") 
+
+AM_invsimpson <- diversity(amfungi_data, index="invsimpson")
+AM_invsimpson=as.data.frame(AM_invsimpson) %>% 
+  rownames_to_column("plotID") 
+
+AM_species_richness = amfungi_data %>% 
+  rownames_to_column("plotID") %>% 
+mutate(AM_species_richness= rowSums(amfungi_data != 0)) %>% 
+  select(plotID, AM_species_richness)
+
+```
+
+```{r Fungi_5-10cm_ad, warning=F, echo=F}
+Fungi_shannon <- diversity(fungi_data, index="shannon") 
+Fungi_shannon=as.data.frame(Fungi_shannon) %>% 
+  rownames_to_column("plotID") 
+
+Fungi_simpson <- diversity(fungi_data, index="simpson")
+Fungi_simpson=as.data.frame(Fungi_simpson) %>% 
+  rownames_to_column("plotID") 
+
+Fungi_invsimpson <- diversity(fungi_data, index="invsimpson")
+Fungi_invsimpson=as.data.frame(Fungi_invsimpson) %>% 
+  rownames_to_column("plotID") 
+
+Fungi_species_richness = fungi_data %>% 
+  rownames_to_column("plotID") %>% 
+mutate(Fungi_species_richness= rowSums(fungi_data != 0)) %>% 
+  select(plotID, Fungi_species_richness)
+
+```
+
+```{r Bact_5-10cm_ad, warning=F, echo=F}
+Bact_shannon <- diversity(bacteria_data, index="shannon") 
+Bact_shannon=as.data.frame(Bact_shannon) %>% 
+  rownames_to_column("plotID") 
+
+Bact_simpson <- diversity(bacteria_data, index="simpson")
+Bact_simpson=as.data.frame(Bact_simpson) %>% 
+  rownames_to_column("plotID") 
+
+Bact_invsimpson <- diversity(bacteria_data, index="invsimpson")
+Bact_invsimpson=as.data.frame(Bact_invsimpson) %>% 
+  rownames_to_column("plotID") 
+
+Bact_species_richness = bacteria_data %>% 
+  rownames_to_column("plotID") %>% 
+mutate(Bact_species_richness= rowSums(bacteria_data != 0)) %>% 
+  select(plotID, Bact_species_richness)
+```
+
+```{r diversity_metrics, echo=F, message=F, warning=F}
+
+diversity_data=environmental_data %>% 
+  left_join(AM_shannon, by="plotID") %>%
+  left_join(AM_simpson, by="plotID") %>%
+  left_join(AM_invsimpson, by="plotID") %>%
+  left_join(AM_species_richness, by="plotID") %>% 
+  mutate(AM_species_evenness=AM_shannon/log(AM_species_richness)) %>% 
+  left_join(Fungi_shannon, by="plotID") %>% 
+  left_join(Fungi_simpson, by="plotID") %>%
+  left_join(Fungi_invsimpson, by="plotID") %>%
+   left_join(Fungi_species_richness, by="plotID") %>% 
+  mutate(Fungi_species_evenness=Fungi_shannon/log(Fungi_species_richness)) %>% 
+  left_join(Bact_shannon, by="plotID") %>%
+  left_join(Bact_simpson, by="plotID") %>%
+  left_join(Bact_invsimpson, by="plotID") %>%  left_join(Bact_species_richness, by="plotID") %>% 
+  mutate(Bact_species_evenness=Bact_shannon/log(Bact_species_richness)) 
+
+```
+## What influences alpha diversity of AM fungi, total fungal community, and bacteria?
+
+### Shannon's Index:
+
+```{r shannon, message=F, warning=F}
+
+#what influences a-diversity of AM fungi?
+#pH, VAI, bedrock depth:
+am_shan=lm(AM_shannon~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(am_shan)
+
+
+#what influences a-diversity of total fungi?
+#pH, AM dominance, BAI:
+fun_shan=lm(Fungi_shannon~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(fun_shan)
+
+
+#what influences a-diversity of bacteria?
+bact_shan=lm(Bact_shannon~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(bact_shan)
+
+tab_model(am_shan, fun_shan, bact_shan, show.se = TRUE, show.ci = FALSE, show.std = "std2", digits = 3, digits.re = 3)
+```
+
+### Simpson's Index:
+
+```{r simpsons}
+#what influences a-diversity of AM fungi?
+am_sim=lm(AM_simpson~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(am_sim)
+
+#what influences a-diversity of total fungi?
+#AM dominance (marginal):
+fun_sim=lm(Fungi_simpson~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(fun_sim)
+
+
+#what influences a-diversity of bacteria?
+bact_sim=lm(Bact_simpson~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(bact_sim)
+
+tab_model(am_sim, fun_sim, bact_sim, show.se = TRUE, show.ci = FALSE, show.std = "std2", digits = 3, digits.re = 3)
+```
+
+### Inverse Simpson's Index: 
+
+```{r inverseSimpsons}
+#what influences a-diversity of AM fungi?
+#VAI, pH, average bedrock depth:
+am_invsim=lm(AM_invsimpson~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(am_invsim)
+
+
+#what influences a-diversity of total fungi?
+#stand age, tree species richness, AM dominance, vert.sd, MAT, pH, C:N:
+fun_invsim=lm(Fungi_invsimpson~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(fun_invsim)
+
+
+#what influences a-diversity of bacteria?
+#pH:
+bact_invsim=lm(Bact_invsimpson~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(bact_invsim)
+
+tab_model(am_invsim, fun_invsim, bact_invsim, show.se = TRUE, show.ci = FALSE, show.std = "std2", digits = 3, digits.re = 3)
+
+```
+
+### Species Richness: 
+
+```{r species_richness}
+#what influences species richness of AM fungi?
+#VAI, pH, average bedrock depth:
+am_sr=lm(AM_species_richness~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(am_sr)
+
+
+#what influences species ricness of total fungi?
+#stand age, tree species richness, AM dominance, vert.sd, MAT, pH, C:N:
+fun_sr=lm(Fungi_species_richness~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(fun_sr)
+
+
+#what influences species richness of bacteria?
+#pH:
+bact_sr=lm(Bact_species_richness~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(bact_sr)
+
+
+
+```
+### Species Evenness: 
+
+```{r species_evenness}
+#what influences species evenness of AM fungi?
+#VAI, pH, average bedrock depth:
+am_ev=lm(AM_species_evenness~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(am_ev)
+
+
+#what influences species evenness of total fungi?
+#stand age, tree species richness, AM dominance, vert.sd, MAT, pH, C:N:
+fun_ev=lm(Fungi_species_evenness~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(fun_ev)
+
+
+#what influences species evenness of bacteria?
+#pH:
+bact_ev=lm(Bact_species_evenness~stand_age_years+ BAtotal_2020+ BAI+ tree_richness+ AMdominance+ VAI+ VCI+ vert.sd+ MAT+ TAP+ C_N+pH+Fe_percent+ avg_brockdepmi, data=diversity_data, na.action=na.omit)
+summary(bact_ev)
+
+
+
+```
+
+
+
+```{r ad_fig}
+
+#calculating the marginal effect of pH on microbial group alpha diversity 
+AM_E1 = ggeffect(am_invsim, terms = c("pH"), type = "random")
+Fun_E1= ggeffect(fun_invsim, terms = c("pH"), type = "random")
+Bact_E1= ggeffect(bact_invsim, terms = c("pH"), type = "random")
+
+a <- ggplot() +
+  geom_point(data = diversity_data, aes(x = pH, y = AM_invsimpson), size=3) +
+  geom_line(data = AM_E1, aes(x = x, y = predicted), size = 1.5) +
+  labs(x= "pH", y="Alpha diversity of AM Fungi" )+
+  theme_cowplot()
+a
+
+b <- ggplot() +
+  geom_point(data = diversity_data, aes(x = pH, y = Fungi_invsimpson), size=3) +
+  geom_line(data = Fun_E1, aes(x = x, y = predicted), size = 1.5) +
+  labs(x= "pH", y="Alpha diversity of Fungi" )+
+  theme_cowplot()
+b
+  
+  c <- ggplot()+
+  geom_point(data = diversity_data, aes(x = pH, y = Bact_invsimpson), size=3) +
+  geom_line(data = Bact_E1, aes(x = x, y = predicted), size = 1.5) +
+labs(x= "pH", y="Alpha diversity of Bacteria" )+
+  theme_cowplot()
+  c
+  
+  ggarrange(a,b,c, labels=c("a", "b", "c" ), nrow=2, ncol=2)
+  ggsave("Figure_2.pdf", width = 8 , height = 7, units = c("in"))
+```
+
