@@ -432,6 +432,31 @@ tab_model(am_invsim_soil, ecm_invsim_soil, fungi_invsim_soil, bacteria_invsim_so
 
 ```
  
+## Geography:
+
+```{r geo, echo=F, message=F, warning=F}
+
+#geo
+am_invsim_geo=lm(AM_invsimpson~GPS_LAT+ GPS_LON, data=AM_diversity_data, na.action=na.omit)
+summary(am_invsim_geo)
+#no
+
+ecm_invsim_geo=lm(ECM_invsimpson~GPS_LAT+ GPS_LON, data=ECM_diversity_data, na.action=na.omit)
+summary(ecm_invsim_geo)
+#nothing
+
+fungi_invsim_geo=lm(Fungi_invsimpson~GPS_LAT+ GPS_LON, data=Fungi_diversity_data, na.action=na.omit)
+summary(fungi_invsim_geo)
+#negative for both lat and lon
+
+bacteria_invsim_geo=lm(Bact_invsimpson~GPS_LAT+ GPS_LON, data=Bacteria_diversity_data, na.action=na.omit)
+summary(bacteria_invsim_geo)
+#none
+
+
+tab_model(am_invsim_geo, ecm_invsim_geo, fungi_invsim_geo, bacteria_invsim_geo, show.se = TRUE, show.ci = FALSE, show.std = "std2", digits = 3, digits.re = 3)
+
+```
 
 ## Climate:
 
