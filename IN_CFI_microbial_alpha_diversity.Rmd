@@ -1073,7 +1073,7 @@ labs(x= "Proportion of tree basal area\nfrom AM-associated species", y="Alpha di
 
 library(dichromat)
 cor_df=deep_fungi_environmental_data %>% 
-  dplyr::select(-plotID, -TAP, -n_percent, -c_percent, -Fe_percent, -BAtotal_2020, -BAI, -VAI, -VCI, -vert.sd, -tree_richness, -AMtreerichness, -EMtreerichness) %>% 
+  dplyr::select(-plotID, -TAP, -n_percent, -c_percent, -Fe_percent, -BAtotal_2020, -BAI, -VCI, -vert.sd, -tree_richness, -AMtreerichness, -EMtreerichness) %>% 
   drop_na()
   
 my_pal=colorRampPalette(c("blue","white","red"))
