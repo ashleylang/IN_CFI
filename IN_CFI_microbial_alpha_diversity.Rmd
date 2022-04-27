@@ -644,6 +644,7 @@ summary(deep_am_invsim_plantstructure)
 shal_ecm_invsim_plantstructure=lm(shal_ECM_invsimpson~vert.sd+ VAI+ VCI, data=shal_ECM_diversity_data, na.action=na.omit)
 summary(shal_ecm_invsim_plantstructure)
 #Positive relationship with VAI
+cor.test(shal_ECM_diversity_data$VAI,shal_ECM_diversity_data$shal_ECM_invsimpson, method="pearson") #0.43
 
 deep_ecm_invsim_plantstructure=lm(deep_ECM_invsimpson~vert.sd+ VAI+ VCI, data=deep_ECM_diversity_data, na.action=na.omit)
 summary(deep_ecm_invsim_plantstructure)
@@ -1066,6 +1067,39 @@ labs(x= "Proportion of tree basal area\nfrom AM-associated species", y="Alpha di
   theme_cowplot()+
   geom_text(aes(x=0.25, y=110, label="5-10 cm: r = 0.65; p = 0.01"))
  
+   
+```
+
+```{r EM_VAI fig}
+shal_ECM_E4= ggeffect(shal_ecm_invsim_plantstructure, terms = c("VAI"), type = "random")
+
+ 
+ a <- ggplot()+
+  geom_point(data = shal_ECM_diversity_data, aes(x = VAI, y = shal_ECM_invsimpson, color="0-5 cm"), size=3) +
+  geom_line(data = shal_ECM_E4, aes(x = x, y = predicted, color="0-5 cm"), size = 1.5) +
+   geom_point(data = deep_ECM_diversity_data, aes(x = VAI, y = deep_ECM_invsimpson, color="5-10 cm"), size=3) +
+labs(x= "Vegetation Area Index", y="Alpha diversity of EM fungi", color="Soil Depth" )+
+   scale_color_manual(values=colors)+
+  theme_cowplot()+  
+   geom_text(aes(x=0.25, y=15.5, label= "p= 0.009"))
+
+      ggsave("EM_VAI_partial.pdf", width = 8 , height = 6, units = c("in")) 
+      
+
+
+ 
+#  b <- ggplot()+
+#   geom_point(data = shal_ECM_diversity_data, aes(x = VAI, y = shal_ECM_invsimpson, color="0-5 cm"), size=3) +
+#   geom_smooth(data = shal_ECM_diversity_data, aes(x = VAI, y = shal_ECM_invsimpson, color="0-5 cm"), size = 1.5, method="lm") +
+#    geom_point(data = deep_ECM_diversity_data, aes(x = VAI, y = deep_ECM_invsimpson, color="5-10 cm"), size=3) +
+# labs(x= "Vegetation Area Index", y="Alpha diversity of EM fungi", color="Soil Depth" )+
+#    scale_color_manual(values=colors)+
+#   theme_cowplot()+
+#   geom_text(aes(x=0.25, y=15.5, label="r = 0.43; p = 0.009"))
+# 
+#       ggsave("EM_VAI_lm.pdf", width = 10 , height = 8, units = c("in")) 
+      
+           
    
 ```
 
