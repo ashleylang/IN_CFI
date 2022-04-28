@@ -531,7 +531,7 @@ summary(deep_ecm_invsim_plantrichness)
 
 shal_fungi_invsim_plantrichness=lm(shal_Fungi_invsimpson~tree_richness+ AMdominance , data=shal_Fungi_diversity_data, na.action=na.omit)
 summary(shal_fungi_invsim_plantrichness)
-#nothing
+#AM dominancne positive
 
 deep_fungi_invsim_plantrichness=lm(deep_Fungi_invsimpson~tree_richness+ AMdominance , data=deep_Fungi_diversity_data, na.action=na.omit)
 summary(deep_fungi_invsim_plantrichness)
@@ -1107,13 +1107,15 @@ labs(x= "Vegetation Area Index", y="Alpha diversity of EM fungi", color="Soil De
 
 library(dichromat)
 cor_df=deep_fungi_environmental_data %>% 
-  dplyr::select(-plotID, -TAP, -n_percent, -c_percent, -Fe_percent, -BAtotal_2020, -BAI, -VCI, -vert.sd, -tree_richness, -AMtreerichness, -EMtreerichness) %>% 
+  dplyr::select(-plotID) %>% 
   drop_na()
-  
+M=cor(cor_df)  
+colnames(M)= c("MAT", "TAP", "Latitude", "Longitude", "Soil % N", "Soil % C", "Soil C:N", "Soil pH", "Soil % Fe", "Stand age", "Total basal area (2020)", "Basal area increment", "Vert SD", "VAI", "VCI", "Tree richness", "AM dominance", "AM tree richness", "EM tree richness")
+rownames(M)=c("MAT", "TAP", "Latitude", "Longitude", "Soil % N", "Soil % C", "Soil C:N", "Soil pH", "Soil % Fe", "Stand age", "Total basal area (2020)", "Basal area increment", "Vert SD", "VAI", "VCI", "Tree richness", "AM dominance", "AM tree richness", "EM tree richness")
 my_pal=colorRampPalette(c("blue","white","red"))
 
-pdf(file = "CFI_alpha_correlations.pdf")
-corrplot::corrplot(cor(cor_df), method="circle", type="upper", diag=F, addCoef.col = "black", col = my_pal(n=200))
+pdf(file = "CFI_alpha_correlations.pdf", width=8, height=8)
+corrplot::corrplot(M, method="color", type="upper", diag=F, addCoef.col = "black", col = my_pal(n=200), number.cex=0.70)
 dev.off()
 
 #-plotID, -GPS_LAT, -GPS_LON, -TAP, -n_percent, -c_percent, -Fe_percent, -BAtotal_2020, -BAI, -VAI, -VCI, -vert.sd, -tree_richness, -AMtreerichness, -EMtreerichness
