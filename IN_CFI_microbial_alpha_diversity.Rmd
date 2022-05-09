@@ -507,7 +507,8 @@ tab_model(am_sim, fun_sim, bact_sim, show.se = TRUE, show.ci = FALSE, show.std =
 #plant richness metrics?
 shal_am_invsim_plantrichness=lm(shal_AM_invsimpson~tree_richness+ AMdominance , data=shal_AM_diversity_data, na.action=na.omit)
 summary(shal_am_invsim_plantrichness)
-#
+
+
 # am_richness <- ggplot() +
 #   geom_point(data = shal_AM_diversity_data, aes(x = tree_richness, y = shal_AM_invsimpson), size=3) +
 #   geom_point(data = shal_AM_diversity_data, aes(x = AMtreerichness, y = shal_AM_invsimpson), size=3, color="blue") +geom_point(data = shal_AM_diversity_data, aes(x = EMtreerichness, y = shal_AM_invsimpson), size=3, color="red") +
@@ -828,7 +829,74 @@ tab_model(shal_am_invsim_clim, shal_ecm_invsim_clim, shal_fungi_invsim_clim, sha
 tab_model(deep_am_invsim_clim, deep_ecm_invsim_clim, deep_fungi_invsim_clim, deep_bacteria_invsim_clim, show.se = TRUE, show.ci = FALSE, show.std = "std2", digits = 3, digits.re = 3)
 
 ```
+```{r full_models }
  
+library(sensemakr)
+#shallow AM:
+shallow_am= lm(shal_AM_invsimpson~AMdominance+stand_age_years+BAtotal_2020+ pH+ TAP, data=shal_AM_diversity_data, na.action=na.omit)
+summary(shallow_am)
+partial_r2(shallow_am)
+
+shallow_am_2= lm(shal_AM_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tree_richness+AMdominance+stand_age_years, data=shal_AM_diversity_data, na.action=na.omit)
+summary(shallow_am_2)
+partial_r2(shallow_am_2)
+
+#deep AM:
+deep_am= lm(deep_AM_invsimpson~stand_age_years +pH, data=deep_AM_diversity_data, na.action=na.omit)
+partial_r2(deep_am)
+
+deep_am_2= lm(deep_AM_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tree_richness+AMdominance+stand_age_years, data=deep_AM_diversity_data, na.action=na.omit)
+summary(deep_am_2)
+partial_r2(deep_am_2)
+
+#shallow EM:
+shallow_em= lm(shal_ECM_invsimpson~stand_age_years+VAI, data=shal_ECM_diversity_data, na.action=na.omit)
+partial_r2(shallow_em)
+
+shallow_em_2= lm(shal_ECM_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tree_richness+AMdominance+stand_age_years, data=shal_ECM_diversity_data, na.action=na.omit)
+
+partial_r2(shallow_em_2)
+#deep EM:
+#no significant predictors
+deep_em_2= lm(deep_ECM_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tree_richness+AMdominance+stand_age_years, data=deep_ECM_diversity_data, na.action=na.omit)
+
+summary(deep_em_2)
+
+
+#shallow bacteria:
+shallow_bacteria= lm(shal_Bact_invsimpson~AMdominance+stand_age_years+VAI+pH, data=shal_Bacteria_diversity_data, na.action=na.omit)
+partial_r2(shallow_bacteria)
+
+shallow_bacteria_2= lm(shal_Bact_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tree_richness+AMdominance+stand_age_years, data=shal_Bacteria_diversity_data, na.action=na.omit)
+summary(shallow_bacteria_2)
+partial_r2(shallow_bacteria_2)
+
+#deep bacteria:
+deep_bacteria= lm(deep_Bact_invsimpson~AMdominance+stand_age_years+pH, data=deep_Bacteria_diversity_data, na.action=na.omit)
+partial_r2(deep_bacteria)
+
+deep_bacteria_2= lm(deep_Bact_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tree_richness+AMdominance+stand_age_years, data=deep_Bacteria_diversity_data, na.action=na.omit)
+summary(deep_bacteria_2)
+partial_r2(deep_bacteria_2)
+
+#shallow fungi:
+shallow_fungi= lm(shal_Fungi_invsimpson~AMdominance+cn+GPS_LAT+pH+MAT, data=shal_Fungi_diversity_data, na.action=na.omit)
+partial_r2(shallow_fungi)
+
+shallow_fungi_2= lm(shal_Fungi_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tree_richness+AMdominance+stand_age_years, data=shal_Fungi_diversity_data, na.action=na.omit)
+summary(shallow_fungi_2)
+
+#deep fungi:
+deep_fungi= lm(deep_Fungi_invsimpson~AMdominance+stand_age_years+cn+GPS_LAT+GPS_LON+pH+MAT, data=deep_Fungi_diversity_data, na.action=na.omit)
+ partial_r2(deep_fungi)
+ 
+deep_fungi_2= lm(deep_Fungi_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tree_richness+AMdominance+stand_age_years, data=deep_Fungi_diversity_data, na.action=na.omit)
+summary(deep_fungi_2)
+partial_r2(deep_fungi_2)
+
+tab_model(shallow_am_2, deep_am_2, shallow_em_2, deep_em_2, shallow_bacteria_2, deep_bacteria_2, shallow_fungi_2, deep_fungi_2, show.se = TRUE, show.ci = FALSE, show.std = "std2", digits = 2, digits.re = 2)
+
+```
 
 ```{r species_richness, eval=F, include=F}
 #what influences species richness of AM fungi?
@@ -877,17 +945,18 @@ summary(bact_ev)
 
 ```{r pH_fig, echo=F, message=F, warning=F}
 
+
 #calculating the marginal effect of pH on microbial group alpha diversity 
 
-shal_AM_E1 = ggeffect(shal_am_invsim_soil, terms = c("pH"), type = "random")
-shal_Fun_E1= ggeffect(shal_fungi_invsim_soil, terms = c("pH"), type = "random")
-shal_Bact_E1= ggeffect(shal_bacteria_invsim_soil, terms = c("pH"), type = "random")
-shal_ECM_E1= ggeffect(shal_ecm_invsim_soil, terms=c("pH"), type="random")
+shal_AM_E1 = ggeffect(shallow_am_2, terms = c("pH"), type = "random")
+shal_Fun_E1= ggeffect(shallow_fungi_2, terms = c("pH"), type = "random")
+shal_Bact_E1= ggeffect(shallow_bacteria_2, terms = c("pH"), type = "random")
+shal_ECM_E1= ggeffect(shallow_em_2, terms=c("pH"), type="random")
 
-deep_AM_E1 = ggeffect(deep_am_invsim_soil, terms = c("pH"), type = "random")
-deep_Fun_E1= ggeffect(deep_fungi_invsim_soil, terms = c("pH"), type = "random")
-deep_Bact_E1= ggeffect(deep_bacteria_invsim_soil, terms = c("pH"), type = "random")
-deep_ECM_E1= ggeffect(deep_ecm_invsim_soil, terms=c("pH"), type="random")
+deep_AM_E1 = ggeffect(deep_am_2, terms = c("pH"), type = "random")
+deep_Fun_E1= ggeffect(deep_fungi_2, terms = c("pH"), type = "random")
+deep_Bact_E1= ggeffect(deep_bacteria_2, terms = c("pH"), type = "random")
+deep_ECM_E1= ggeffect(deep_em_2, terms=c("pH"), type="random")
 
 colors=c("0-5 cm"= "blue", "5-10 cm" = "red")
 
@@ -899,19 +968,20 @@ a <- ggplot() +
   geom_line(data = deep_AM_E1, aes(x = x, y = predicted,color="5-10 cm"), size = 1.5) +
   labs(x= "Soil pH", y="Alpha diversity of AM fungi", color="Soil Depth" )+
   scale_color_manual(values=colors)+
-  theme_cowplot()+
-  geom_text(aes(x=4.3, y=24, label="0-5 cm: r = 0.60; p < 0.001\n5-10 cm: r = 0.42; p = 0.04"))
+  theme_cowplot()
+#+
+ # geom_text(aes(x=4.3, y=24, label="0-5 cm: r = 0.60; p < 0.001\n5-10 cm: r = 0.42; p = 0.04"))
 
 
 b <- ggplot() +
   geom_point(data = shal_Fungi_diversity_data, aes(x = pH, y = shal_Fungi_invsimpson, color="0-5 cm"), size=3) +
-  geom_line(data = shal_Fun_E1, aes(x = x, y = predicted, color="0-5 cm"), size = 1.5) +
   geom_point(data = deep_Fungi_diversity_data, aes(x = pH, y = deep_Fungi_invsimpson,color="5-10 cm"), size=3) +
   geom_line(data = deep_Fun_E1, aes(x = x, y = predicted,color="5-10 cm"), size = 1.5) +
   labs(x= "Soil pH", y="Alpha diversity of total fungi" ,color="Soil Depth")+
   scale_color_manual(values=colors)+
-  theme_cowplot()+
-  geom_text(aes(x=4.35, y=100, label="0-5 cm: r = 0.41; p = 0.031\n5-10 cm: r = 0.47; p = 0.001"))
+  theme_cowplot()
+#+
+ # geom_text(aes(x=4.35, y=100, label="0-5 cm: r = 0.41; p = 0.031\n5-10 cm: r = 0.47; p = 0.001"))
 
 
   c<- ggplot()+
@@ -921,15 +991,14 @@ b <- ggplot() +
   geom_line(data = deep_Bact_E1, aes(x = x, y = predicted,color="5-10 cm"), size = 1.5) +
 labs(x= "Soil pH", y="Alpha diversity of bacteria"  ,color="Soil Depth")+
   scale_color_manual(values=colors)+
-  theme_cowplot()+
-  geom_text(aes(x=4.35, y=645, label="0-5 cm: r = 0.75; p < 0.001\n5-10 cm: r = 0.56; p = 0.001"))
+  theme_cowplot()
+  #+
+ # geom_text(aes(x=4.35, y=645, label="0-5 cm: r = 0.75; p < 0.001\n5-10 cm: r = 0.56; p = 0.001"))
 
 #Maybe even take the lines off?
    d <- ggplot()+
   geom_point(data = shal_ECM_diversity_data, aes(x = pH, y = shal_ECM_invsimpson, color="0-5 cm"), size=3) +
-#  geom_line(data = shal_ECM_E1, aes(x = x, y = predicted), size = 1.5, color="blue",linetype="dashed") +
   geom_point(data = deep_ECM_diversity_data, aes(x = pH, y = deep_ECM_invsimpson, color="5-10 cm"), size=3) +
-#  geom_line(data = deep_ECM_E1, aes(x = x, y = predicted), size = 1.5, color="red",linetype="dashed") +
 labs(x= "Soil pH", y="Alpha diversity of EM fungi" ,color="Soil Depth")+
   scale_color_manual(values=colors)+
   theme_cowplot()
@@ -939,7 +1008,8 @@ labs(x= "Soil pH", y="Alpha diversity of EM fungi" ,color="Soil Depth")+
 
 ggarrange(c,b,a,d, labels=c("a", "b", "c", "d" ), nrow=2, ncol=2, legend="right", common.legend=TRUE)
 
-ggsave("Figure_2.tiff", width = 10.5 , height = 8, units = c("in"))
+
+ggsave("Figure_S2.pdf", width = 10.5 , height = 8, units = c("in"))
   
   #compare with figure without marginal effects:
 
@@ -980,15 +1050,15 @@ ggsave("Figure_2.tiff", width = 10.5 , height = 8, units = c("in"))
 ```
 
 ```{r stand_age_fig, echo=F, message=F, warning=F}
- shal_Bact_E2 = ggeffect(shal_bacteria_invsim_plantprod, terms = c("stand_age_years"), type = "random")
- shal_Fun_E2= ggeffect(shal_fungi_invsim_plantprod, terms = c("stand_age_years"), type = "random") #not significant
- shal_AM_E2= ggeffect(shal_am_invsim_plantprod, terms = c("stand_age_years"), type = "random")
- shal_EM_E2= ggeffect(shal_ecm_invsim_plantprod, terms=c("stand_age_years"), type="random")
+ shal_Bact_E2 = ggeffect(shallow_bacteria_2, terms = c("stand_age_years"), type = "random")
+ shal_Fun_E2= ggeffect(shallow_fungi_2, terms = c("stand_age_years"), type = "random") #not significant
+ shal_AM_E2= ggeffect(shallow_am_2, terms = c("stand_age_years"), type = "random")
+ shal_EM_E2= ggeffect(shallow_em_2, terms=c("stand_age_years"), type="random")
  
- deep_Bact_E2 = ggeffect(deep_bacteria_invsim_plantprod, terms = c("stand_age_years"), type = "random")
- deep_Fun_E2= ggeffect(deep_fungi_invsim_plantprod, terms = c("stand_age_years"), type = "random")
- deep_AM_E2= ggeffect(deep_am_invsim_plantprod, terms = c("stand_age_years"), type = "random")
- deep_EM_E2= ggeffect(deep_ecm_invsim_plantprod,  terms=c("stand_age_years"), type="random")#not significant
+ deep_Bact_E2 = ggeffect(deep_bacteria_2, terms = c("stand_age_years"), type = "random")
+ deep_Fun_E2= ggeffect(deep_fungi_2, terms = c("stand_age_years"), type = "random")
+ deep_AM_E2= ggeffect(deep_am_2, terms = c("stand_age_years"), type = "random")
+ deep_EM_E2= ggeffect(deep_em_2,  terms=c("stand_age_years"), type="random")#not significant
 
 
  a <- ggplot() +
@@ -1071,19 +1141,48 @@ labs(x= "Proportion of tree basal area\nfrom AM-associated species", y="Alpha di
 ```
 
 ```{r EM_VAI fig}
-shal_ECM_E4= ggeffect(shal_ecm_invsim_plantstructure, terms = c("VAI"), type = "random")
+shal_ECM_E4= ggeffect(shallow_em_2, terms = c("VAI"), type = "random")
+# deep_ECM_E4= ggeffect(deep_ecm_invsim_plantstructure, terms = c("VAI"), type = "random")
+# shal_AM_E4= ggeffect(shal_am_invsim_plantstructure, terms = c("VAI"), type = "random")
+# deep_AM_E4= ggeffect(deep_am_invsim_plantstructure, terms = c("VAI"), type = "random")
+# shal_bacteria_E4= ggeffect(shal_bacteria_invsim_plantstructure, terms = c("VAI"), type = "random")
+# deep_bacteria_E4= ggeffect(deep_bacteria_invsim_plantstructure, terms = c("VAI"), type = "random")
+# shal_fungi_E4= ggeffect(shal_fungi_invsim_plantstructure, terms = c("VAI"), type = "random")
+# deep_fungi_E4= ggeffect(deep_fungi_invsim_plantstructure, terms = c("VAI"), type = "random")
+
 
  
- a <- ggplot()+
+a <- ggplot()+
   geom_point(data = shal_ECM_diversity_data, aes(x = VAI, y = shal_ECM_invsimpson, color="0-5 cm"), size=3) +
   geom_line(data = shal_ECM_E4, aes(x = x, y = predicted, color="0-5 cm"), size = 1.5) +
-   geom_point(data = deep_ECM_diversity_data, aes(x = VAI, y = deep_ECM_invsimpson, color="5-10 cm"), size=3) +
-labs(x= "Vegetation Area Index", y="Alpha diversity of EM fungi", color="Soil Depth" )+
-   scale_color_manual(values=colors)+
-  theme_cowplot()+  
-   geom_text(aes(x=0.25, y=15.5, label= "p= 0.009"))
+  geom_point(data = deep_ECM_diversity_data, aes(x = VAI, y = deep_ECM_invsimpson, color="5-10 cm"), size=3) +
+  labs(x= "Vegetation Area Index", y="Alpha diversity of EM fungi", color="Soil Depth" )+
+  scale_color_manual(values=colors)+
+  theme_cowplot()
 
-      ggsave("EM_VAI_partial.pdf", width = 8 , height = 6, units = c("in")) 
+b <- ggplot()+
+  geom_point(data = shal_AM_diversity_data, aes(x = VAI, y = shal_AM_invsimpson, color="0-5 cm"), size=3) +
+  geom_point(data = deep_AM_diversity_data, aes(x = VAI, y = deep_AM_invsimpson, color="5-10 cm"), size=3) +
+  labs(x= "Vegetation Area Index", y="Alpha diversity of AM fungi", color="Soil Depth" )+
+  scale_color_manual(values=colors)+
+  theme_cowplot()
+
+c <- ggplot()+
+  geom_point(data = shal_Bacteria_diversity_data, aes(x = VAI, y = shal_Bact_invsimpson, color="0-5 cm"), size=3) +
+  geom_point(data = deep_Bacteria_diversity_data, aes(x = VAI, y = deep_Bact_invsimpson, color="5-10 cm"), size=3) +
+  labs(x= "Vegetation Area Index", y="Alpha diversity of Bacteria", color="Soil Depth" )+
+  scale_color_manual(values=colors)+
+  theme_cowplot()
+ 
+d <- ggplot()+
+  geom_point(data = shal_Fungi_diversity_data, aes(x = VAI, y = shal_Fungi_invsimpson, color="0-5 cm"), size=3) +
+  geom_point(data = deep_Fungi_diversity_data, aes(x = VAI, y = deep_Fungi_invsimpson, color="5-10 cm"), size=3) +
+  labs(x= "Vegetation Area Index", y="Alpha diversity of Fungi", color="Soil Depth" )+
+  scale_color_manual(values=colors)+
+  theme_cowplot() 
+ 
+  ggarrange(a,b,c,d, labels=c("a", "b", "c", "d"), nrow=2, ncol=2, legend="right", common.legend=TRUE)
+      ggsave("VAI_partial.pdf", width = 10 , height = 8, units = c("in")) 
       
 
 
@@ -1103,15 +1202,111 @@ labs(x= "Vegetation Area Index", y="Alpha diversity of EM fungi", color="Soil De
    
 ```
 
+```{r myc_richnesses}
+
+
+cor.test(shal_AM_diversity_data$AMtreerichness,shal_AM_diversity_data$shal_AM_invsimpson, method="pearson") 
+#r=0.24
+#  p=0.16
+
+cor.test(deep_AM_diversity_data$AMtreerichness,deep_AM_diversity_data$deep_AM_invsimpson, method="pearson") 
+#r=0.28
+#  p=0.11
+
+cor.test(shal_ECM_diversity_data$EMtreerichness,shal_ECM_diversity_data$shal_ECM_invsimpson, method="pearson")
+#r=-0.097
+#  p=0.57
+
+cor.test(deep_ECM_diversity_data$EMtreerichness,deep_ECM_diversity_data$deep_ECM_invsimpson, method="pearson") 
+#r=0.19
+#  p=0.26
+
+a <- ggplot()+
+  geom_point(data = shal_AM_diversity_data, aes(x = AMtreerichness, y = shal_AM_invsimpson, color="0-5 cm"), size=3) +
+  geom_point(data = deep_AM_diversity_data, aes(x = AMtreerichness, y = deep_AM_invsimpson, color="5-10 cm"), size=3) +
+  labs(x= "AM tree species richness", y="Alpha diversity of AM Fungi", color="Soil Depth" )+
+  scale_color_manual(values=colors)+
+  geom_text(aes(x=0.85, y=26.5, label="0-5: r = 0.24; p = 0.16\n5-10: r= 0.28; p= 0.11"))+
+  theme_cowplot()
+ 
+b <- ggplot()+
+  geom_point(data = shal_ECM_diversity_data, aes(x = EMtreerichness, y = shal_ECM_invsimpson, color="0-5 cm"), size=3) +
+  geom_point(data = deep_ECM_diversity_data, aes(x = EMtreerichness, y = deep_ECM_invsimpson, color="5-10 cm"), size=3) +
+  labs(x= "EM tree species richness", y="Alpha diversity of EM Fungi", color="Soil Depth" )+
+  scale_color_manual(values=colors)+
+   geom_text(aes(x=0.5, y=20, label="0-5: r = -0.097; p = 0.57\n5-10: r= 0.19; p= 0.26"))+
+  theme_cowplot() 
+ 
+  ggarrange(a,b, labels=c("a", "b"), nrow=1, ncol=2, legend="right", common.legend=TRUE)
+      ggsave("AM_EM_richness.pdf", width = 12 , height = 5, units = c("in")) 
+
+
+```
+
+
+```{r am_stand_age}
+ x <- ggplot()+
+  geom_point(data = deep_am_environmental_data, aes(x = stand_age_years, y = AMdominance))+
+  geom_smooth(method="lm")+
+labs(x= "stand age (years)", y="Proportion of tree basal area\nfrom AM-associated species" )+
+  theme_cowplot()
+
+x
+
+#-0.66: older stands have less AM trees
+cor.test(deep_am_environmental_data$AMdominance,deep_am_environmental_data$stand_age_years, method="pearson")
+
+#older stands do not have less AM tree richness
+cor.test(deep_am_environmental_data$AMtreerichness,deep_am_environmental_data$stand_age_years, method="pearson")
+
+#older stands have richer EM tree communities (r=0.49)
+cor.test(deep_fungi_environmental_data$EMtreerichness,deep_fungi_environmental_data$stand_age_years, method="pearson")
+
+#In shallow soil, is AM fungal richness correlated with AM tree richness?
+cor.test(shal_AM_diversity_data$AMtreerichness,shal_AM_diversity_data$shal_AM_invsimpson, method="pearson")
+#NO
+
+#Deep soil?
+cor.test(deep_AM_diversity_data$AMtreerichness,deep_AM_diversity_data$deep_AM_invsimpson, method="pearson")
+#no
+
+#But AM dominance is?
+#yes in shallow soil
+cor.test(shal_AM_diversity_data$AMdominance,shal_AM_diversity_data$shal_AM_invsimpson, method="pearson")
+#not for deep
+cor.test(deep_AM_diversity_data$AMdominance,deep_AM_diversity_data$deep_AM_invsimpson, method="pearson")
+
+#So shallow soil: more AM basal area makes AM fungal community richer, not necessarily because of an increase in AM tree species richness though. 
+
+#ECM fungal richness and EM tree richness correlated?:
+#shallow:
+cor.test(shal_ECM_diversity_data$EMtreerichness,shal_ECM_diversity_data$shal_ECM_invsimpson, method="pearson")
+#not at all
+
+#Deep soil?
+cor.test(deep_ECM_diversity_data$EMtreerichness,deep_ECM_diversity_data$deep_ECM_invsimpson, method="pearson")
+#nope
+
+#And ECM tree dominance is not correlated with ECM fungal richness
+#not for shallow
+cor.test(shal_ECM_diversity_data$AMdominance,shal_ECM_diversity_data$shal_ECM_invsimpson, method="pearson")
+
+#not for deep
+cor.test(deep_ECM_diversity_data$AMdominance,deep_ECM_diversity_data$deep_ECM_invsimpson, method="pearson")
+
+
+```
+
+
 ```{r correlations, echo=F, message=F, warning=F}
 
 library(dichromat)
 cor_df=deep_fungi_environmental_data %>% 
-  dplyr::select(-plotID) %>% 
+  dplyr::select(-plotID, -TAP, -MAT, -GPS_LAT, -GPS_LON, -BAtotal_2020) %>% 
   drop_na()
 M=cor(cor_df)  
-colnames(M)= c("MAT", "TAP", "Latitude", "Longitude", "Soil % N", "Soil % C", "Soil C:N", "Soil pH", "Soil % Fe", "Stand age", "Total basal area (2020)", "Basal area increment", "Vert SD", "VAI", "VCI", "Tree richness", "AM dominance", "AM tree richness", "EM tree richness")
-rownames(M)=c("MAT", "TAP", "Latitude", "Longitude", "Soil % N", "Soil % C", "Soil C:N", "Soil pH", "Soil % Fe", "Stand age", "Total basal area (2020)", "Basal area increment", "Vert SD", "VAI", "VCI", "Tree richness", "AM dominance", "AM tree richness", "EM tree richness")
+colnames(M)= c("Soil % N", "Soil % C", "Soil C:N", "Soil pH", "Soil % Fe", "Stand age", "Basal area increment", "Vert SD", "VAI", "VCI", "Tree richness", "AM dominance", "AM tree richness", "EM tree richness")
+rownames(M)=c("Soil % N", "Soil % C", "Soil C:N", "Soil pH", "Soil % Fe", "Stand age", "Basal area increment", "Vert SD", "VAI", "VCI", "Tree richness", "AM dominance", "AM tree richness", "EM tree richness")
 my_pal=colorRampPalette(c("blue","white","red"))
 
 pdf(file = "CFI_alpha_correlations.pdf", width=8, height=8)
