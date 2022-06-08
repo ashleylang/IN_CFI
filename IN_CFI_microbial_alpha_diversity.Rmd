@@ -463,7 +463,11 @@ deep_Bacteria_diversity_data=deep_bacteria_environmental_data%>%
 
 
 ```{r full_models }
+
+#Currently in random effect of county mode: convert to regular linear models with lm function and syntax change
  
+library(nlme)
+library(MuMIn)
 #shallow AM:
 shallow_am_2= lme(shal_AM_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tree_richness+AMdominance+stand_age_years, random=(~1| county), data=shal_AM_diversity_data, na.action=na.omit)
 summary(shallow_am_2)
