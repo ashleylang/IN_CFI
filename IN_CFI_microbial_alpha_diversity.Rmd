@@ -735,14 +735,27 @@ labs(x= "Proportion of tree basal area\nfrom AM-associated species", y="Alpha di
 
 ```{r EM_VAI fig}
 shal_ECM_E4= ggeffect(shallow_em_2, terms = c("VAI"), type = "random")
+shal_ECM_EX= ggeffect(shallow_em_2, terms = c("stand_age_years"), type = "random")
  
 a <- ggplot()+
   geom_point(data = shal_ECM_diversity_data, aes(x = VAI, y = shal_ECM_invsimpson, color="0-5 cm"), size=3) +
   geom_line(data = shal_ECM_E4, aes(x = x, y = predicted, color="0-5 cm"), size = 1.5) +
   geom_point(data = deep_ECM_diversity_data, aes(x = VAI, y = deep_ECM_invsimpson, color="5-10 cm"), size=3) +
-  labs(x= "Vegetation Area Index", y="Alpha diversity of EM fungi", color="Soil Depth" )+
+  labs(x= "Vegetation Area Index", y="Alpha diversity of EM fungi", color="Soil Depth")+
   scale_color_manual(values=colors)+
-  theme_cowplot()
+  theme_cowplot()+
+  geom_text(aes(x=0.65, y=16, label="0-5 cm: r = 0.19; p = 0.023"))
+
+
+#now ECM vs stand age
+a2 <- ggplot()+
+  geom_point(data = shal_ECM_diversity_data, aes(x = stand_age_years, y = shal_ECM_invsimpson, color="0-5 cm"), size=3) +
+  geom_line(data = shal_ECM_EX, aes(x = x, y = predicted, color="0-5 cm"), size = 1.5) +
+  geom_point(data = deep_ECM_diversity_data, aes(x = stand_age_years, y = deep_ECM_invsimpson, color="5-10 cm"), size=3) +
+  labs(x= "Stand Age (years)", y="Alpha diversity of EM fungi", color="Soil Depth" )+
+  scale_color_manual(values=colors)+
+  theme_cowplot()+
+  geom_text(aes(x=40, y=16, label="0-5 cm: r = 0.21; p = 0.017"))
 
 b <- ggplot()+
   geom_point(data = shal_AM_diversity_data, aes(x = VAI, y = shal_AM_invsimpson, color="0-5 cm"), size=3) +
@@ -765,8 +778,8 @@ d <- ggplot()+
   scale_color_manual(values=colors)+
   theme_cowplot() 
  
-  ggarrange(a,b,c,d, labels=c("a", "b", "c", "d"), nrow=2, ncol=2, legend="right", common.legend=TRUE)
-      ggsave("VAI_fig.tiff", width = 10 , height = 8, units = c("in")) 
+  ggarrange(a,a2, labels=c("a", "b"), nrow=1, ncol=2, legend="right", common.legend=TRUE)
+      ggsave("ECM_a_div_fig.pdf", width = 12 , height = 5, units = c("in")) 
       
 ```
 
@@ -776,6 +789,7 @@ d <- ggplot()+
 cor.test(shal_AM_diversity_data$AMtreerichness,shal_AM_diversity_data$shal_AM_invsimpson, method="pearson") 
 #r=0.24
 #  p=0.16
+summary(lm(AMtreerichness~deep_AM_invsimpson, data=deep_AM_diversity_data))
 
 cor.test(deep_AM_diversity_data$AMtreerichness,deep_AM_diversity_data$deep_AM_invsimpson, method="pearson") 
 #r=0.28
