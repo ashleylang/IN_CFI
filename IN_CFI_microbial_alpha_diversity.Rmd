@@ -744,7 +744,8 @@ a <- ggplot()+
   labs(x= "Vegetation Area Index", y="Alpha diversity of EM fungi", color="Soil Depth")+
   scale_color_manual(values=colors)+
   theme_cowplot()+
-  geom_text(aes(x=0.65, y=16, label="0-5 cm: r = 0.19; p = 0.023"))
+      theme(axis.title=element_text(size=18),axis.text=element_text(size=14),legend.title=element_text(size=14))+
+  geom_text(aes(x=0.68, y=16.5, label="0-5 cm: r = 0.19; p = 0.023"), size=5)
 
 
 #now ECM vs stand age
@@ -755,13 +756,15 @@ a2 <- ggplot()+
   labs(x= "Stand Age (years)", y="Alpha diversity of EM fungi", color="Soil Depth" )+
   scale_color_manual(values=colors)+
   theme_cowplot()+
-  geom_text(aes(x=40, y=16, label="0-5 cm: r = 0.21; p = 0.017"))
+      theme(axis.title=element_text(size=18), axis.text=element_text(size=14), legend.title=element_text(size=14))+
+  geom_text(aes(x=43, y=16.5, label="0-5 cm: r = 0.21; p = 0.017"), size=5)
 
 b <- ggplot()+
   geom_point(data = shal_AM_diversity_data, aes(x = VAI, y = shal_AM_invsimpson, color="0-5 cm"), size=3) +
   geom_point(data = deep_AM_diversity_data, aes(x = VAI, y = deep_AM_invsimpson, color="5-10 cm"), size=3) +
   labs(x= "Vegetation Area Index", y="Alpha diversity of AM fungi", color="Soil Depth" )+
   scale_color_manual(values=colors)+
+    theme(axis.title=element_text(size=13))+
   theme_cowplot()
 
 c <- ggplot()+
@@ -769,6 +772,7 @@ c <- ggplot()+
   geom_point(data = deep_Bacteria_diversity_data, aes(x = VAI, y = deep_Bact_invsimpson, color="5-10 cm"), size=3) +
   labs(x= "Vegetation Area Index", y="Alpha diversity of Bacteria", color="Soil Depth" )+
   scale_color_manual(values=colors)+
+    theme(axis.title=element_text(size=13))+
   theme_cowplot()
  
 d <- ggplot()+
@@ -776,6 +780,7 @@ d <- ggplot()+
   geom_point(data = deep_Fungi_diversity_data, aes(x = VAI, y = deep_Fungi_invsimpson, color="5-10 cm"), size=3) +
   labs(x= "Vegetation Area Index", y="Alpha diversity of Fungi", color="Soil Depth" )+
   scale_color_manual(values=colors)+
+  theme(axis.title=element_text(size=13))+
   theme_cowplot() 
  
   ggarrange(a,a2, labels=c("a", "b"), nrow=1, ncol=2, legend="right", common.legend=TRUE)
