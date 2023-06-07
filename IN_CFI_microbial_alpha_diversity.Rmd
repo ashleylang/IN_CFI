@@ -462,8 +462,6 @@ deep_Bacteria_diversity_data=deep_bacteria_environmental_data%>%
 ```
 
 ```{r full_models }
-
-#Currently in random effect of county mode: convert to regular linear models with lm function and syntax change
  
 #shallow AM:
 shallow_am_2= lm(shal_AM_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tree_richness+AMdominance+stand_age_years, data=shal_AM_diversity_data, na.action=na.omit)
@@ -515,7 +513,7 @@ deep_fungi_2= lm(deep_Fungi_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tree
 summary(deep_fungi_2)
 partial_r2(deep_fungi_2) #(for lm)
 
-tab_model(shallow_am_2, deep_am_2, shallow_em_2, deep_em_2, shallow_bacteria_2, deep_bacteria_2, shallow_fungi_2, deep_fungi_2, show.se = TRUE, show.ci = FALSE, show.std = "std2", digits = 2, digits.re = 2)
+tab_model(shallow_am_2, deep_am_2, shallow_em_2, deep_em_2, shallow_bacteria_2, deep_bacteria_2, shallow_fungi_2, deep_fungi_2, show.se = TRUE, show.ci = FALSE, show.std = "std2", digits = 2, digits.re = 2, show.stat = T, show.df = T)
 
 ```
 
@@ -575,7 +573,7 @@ r.squaredGLMM(deep_fungi_2)
 
 #partial_r2(deep_fungi_2) #(for lm)
 
-tab_model(shallow_am_2, deep_am_2, shallow_em_2, deep_em_2, shallow_bacteria_2, deep_bacteria_2, shallow_fungi_2, deep_fungi_2, show.se = TRUE, show.ci = FALSE, show.std = "std2", digits = 2, digits.re = 2)
+tab_model(shallow_am_2, deep_am_2, shallow_em_2, deep_em_2, shallow_bacteria_2, deep_bacteria_2, shallow_fungi_2, deep_fungi_2, show.se = TRUE, show.ci = FALSE, show.std = "std2", digits = 2, digits.re = 2, show.stat=TRUE, show.df=TRUE)
 
 ```
 
