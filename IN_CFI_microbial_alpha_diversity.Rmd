@@ -571,6 +571,8 @@ deep_fungi_2= lme(deep_Fungi_invsimpson~cn+pH+Fe_percent+BAI+vert.sd+VAI+VCI+tre
 summary(deep_fungi_2)
 r.squaredGLMM(deep_fungi_2)
 
+
+
 #partial_r2(deep_fungi_2) #(for lm)
 
 tab_model(shallow_am_2, deep_am_2, shallow_em_2, deep_em_2, shallow_bacteria_2, deep_bacteria_2, shallow_fungi_2, deep_fungi_2, show.se = TRUE, show.ci = FALSE, show.std = "std2", digits = 2, digits.re = 2, show.stat=TRUE, show.df=TRUE)
@@ -615,6 +617,15 @@ b <- ggplot() +
   scale_color_manual(values=colors)+
   theme_cowplot()
 
+#model for bacteria- testing if nonlinear fit is better
+#yes for shal bacteria, no for deep
+# yes for both shal and deep fungi 
+#no for shal and deep AM
+# no for shal and deep ECM
+# a1 <- lm(deep_AM_invsimpson~ pH, data= deep_AM_diversity_data)
+# a2 <- lm(deep_AM_invsimpson ~ poly(pH,2), data= deep_AM_diversity_data)
+# summary(a1)
+# summary(a2)
 
   c<- ggplot()+
   geom_point(data = shal_Bacteria_diversity_data, aes(x = pH, y = shal_Bact_invsimpson, color="0-5 cm"), size=3) +
@@ -910,5 +921,13 @@ am_alpha_county=ggplot()+
 
 am_alpha_county
 
+```
+
+```{r soil_summary}
+
+soil_summary=shal_bacteria_environmental_data %>% 
+  summarize()
+
+summary(shal_bacteria_environmental_data)
 ```
 
