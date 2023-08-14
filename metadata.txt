@@ -1,0 +1,20 @@
+Project title: Forest structural diversity is linked to soil microbial diversity 
+Authors:
+Ashley Lang (al40@iu.edu), Elizabeth A. LaRue(ealarue@utep.edu), Joseph Edwards, Stephanie N. Kivlin, Rich Phillips, Joey Gallion, Nicole Kong, John D. Parker, Melissa K. McCormick, Grant Domke, Songlin Fei
+
+Code used to generate variables compiled into the final dataset. 
+
+* Note that coordinates for plots are not shared from the Indiana DNR CFI because plots are often located on private land. Interested users should contact the Indiana DNR to obtain raw forest inventory and plot coordinates. The coordinates could then be used to pull raw geolocated data from public sources such as the lidar from the USGS 3DEP Program of CHELSA data.
+
+-----------------------------------
+Extract data and generate variables used in final dataset. 
+.R files are run in sequential order as indicated by 00, 01, 02, 03, 04 in R version 3.6.3.
+
+01_sitemap.R - Maps the 38 plots across Indiana. Must request coordinates from Indiana DNR. 
+
+02_stand_variables.R - Aggregates individual level tree data from Indiana CFI into stand-level environmental predictors. Must request coordinates and raw inventory data from Indiana DNR.
+
+03_climate.R - extracts climate predictors from freely available CHELSA for the plot locations. Must request coordinates from Indiana DNR.
+
+04_lidar_metrics.R - processes the raw freely available USGS 3DEP 2016-2019 LiDAR for Indiana by clipping to plot size, removing outliers, and correcting for elevation to then calculate forest structural diversity metrics. Must request coordinates from Indiana DNR.
+-----------------------------------
